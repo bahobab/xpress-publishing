@@ -36,5 +36,7 @@ artistRouter.get('/:id', (req, res, next) => {
     res.status(200).json({artist: req.artist});
 });
 
-
+artistRouter.post('/', (req, res, next) => {
+    console.log(req.body);
+})
 module.exports = artistRouter;
