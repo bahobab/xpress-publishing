@@ -8,7 +8,7 @@ const cors = require('cors');
 const errorHandler = require('errorhandler');
 const apiRouter = require('./api/api');
 
-express.use('/api', apiRouter);
+app.use('/api', apiRouter);
 
 app.use(bodyParser.json());
 app.use(cors());
