@@ -32,7 +32,9 @@ artistRouter.param('id', (req,res, next, id) => {
     });
 });
 
-
+artistRouter.get('/:id', (req, res, next) => {
+    res.status(200).json({artist: req.artist});
+});
 
 
 module.exports = artistRouter;
