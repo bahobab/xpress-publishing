@@ -1,6 +1,8 @@
 const sqlite3 = require('sqlite3');
 
-const db = new sqlite3.Database('./database.sqlite');
+// const db = new sqlite3.Database('./database.sqlite');
+
+const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
 db.run(`CREATE TABLE IF NOT EXISTS Artist
             (

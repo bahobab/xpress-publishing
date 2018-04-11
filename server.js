@@ -2,18 +2,25 @@
 
 const express = require('express');
 const app = express();
+
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const cors = require('cors');
 const errorHandler = require('errorhandler');
 const apiRouter = require('./api/api');
 
-app.use('/api', apiRouter);
-
-app.use(bodyParser.json());
 app.use(cors());
+app.use(bodyParser.json());
+app.use('/api', apiRouter);
 app.use(morgan('dev'));
 app.use(errorHandler());
+
+// app.use(cors());
+// app.use(bodyParser.json());
+// app.use('/api', apiRouter);
+
+// app.use(morgan('dev'));
+// app.use(errorHandler());
 
 const PORT = process.env.PORT || 4000;
 

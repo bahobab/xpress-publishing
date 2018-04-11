@@ -329,7 +329,7 @@ describe('POST /api/artists', function() {
 
   it('should create a valid artist', function(done) {
       request(app)
-        .post('/api/artists/')
+        .post('/api/artists')
         .send({artist: newArtist})
         .then(function() {
           testDb.all('SELECT * FROM Artist', function(error, result) {
@@ -348,14 +348,14 @@ describe('POST /api/artists', function() {
 
   it('should return a 201 status code after artist creation', function() {
     return request(app)
-        .post('/api/artists/')
+        .post('/api/artists')
         .send({artist: newArtist})
         .expect(201);
   });
 
   it('should return the newly-created artist after artist creation', function() {
     return request(app)
-        .post('/api/artists/')
+        .post('/api/artists')
         .send({artist: newArtist})
         .then(function(response) {
           const artist = response.body.artist;
@@ -369,7 +369,7 @@ describe('POST /api/artists', function() {
 
   it('should set new artists as currently-employed by default', function() {
     return request(app)
-        .post('/api/artists/')
+        .post('/api/artists')
         .send({artist: newArtist})
         .then(function(response) {
           const artist = response.body.artist;
@@ -384,7 +384,7 @@ describe('POST /api/artists', function() {
     };
 
     return request(app)
-        .post('/api/artists/')
+        .post('/api/artists')
         .send({artist: newArtist})
         .expect(400);
   });

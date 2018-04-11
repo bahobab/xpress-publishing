@@ -37,6 +37,44 @@ artistRouter.get('/:id', (req, res, next) => {
 });
 
 artistRouter.post('/', (req, res, next) => {
-    console.log(req.body);
-})
+    const newArtist = req.body.artist;
+    if (!(newArtist.name && newArtist.dateOfBirth && newArtist.biography)) {
+        res.sendStatus(400);
+    } else {
+        if (newArtist.isCurrentlyEmployed === undefined) newArtist.isCurrentlyEmployed = 1;
+        const {name, dateOfBirth, biography, isCurrentlyEmployed} = newArtist;
+        // try {
+
+        const query = `INSERT INTO Artist
+                           (name, date_of_birth, biography, is_currently_employed)
+                               VALUES ($name, $dob, $bio, $ice);`;
+        const values = {
+            $name: name,
+            $dob: dateOfBirth,
+            $bio: biography,
+            $ice: isCurrentlyEmployed
+        };
+
+        // const query = `INSERT INTO Artist (name, date_of_birth, biography, is_currently_employed) VALUES ('${name}', '${dateOfBirth}', '${biography}', ${isCurrentlyEmployed});`;
+
+        db.run(query, values, err => {
+        // db.run(query, err => {
+            if (err) {
+                next(err);
+            } else {
+                // newArtist.id = lastID;
+                console.log('>>>>', lastID);
+                db.get(`SELECT * FROM Artist WHERE id=${lastID}`, (error, artist) => {
+                    if (error) next(error);
+                    res.status(201).json({artist});
+                })
+            }
+        });
+        // }
+        // catch(e) {
+        //     console.log(e);
+        // }
+    };
+});
+
 module.exports = artistRouter;
