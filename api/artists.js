@@ -3,16 +3,20 @@ const artistRouter = express.Router();
 
 const sqlite3 = require('sqlite3');
 
-const db = new sqlite3.Database(process.env.TEST_DATABASE || '../database.sqlite');
+// const db = new sqlite3.Database(process.env.TEST_DATABASE || '../database.sqlite');
+const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite', (err) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    console.log('Connected to the in-memory SQlite database in artists');
+  });
 
 artistRouter.get('/', (req, res, next) => {
-    const query = `SELECT *
-                    FROM Artist
-                        WHERE is_currently_employed = 1;`;
+    const query = `SELECT * FROM Artist WHERE is_currently_employed = 1;`;
     
     db.all(query, (err, artists) => {
         if (err) next(err);
-        // console.log('>>>', artists);
+        // console.log('GET /api/artists >>>', artists, err);
         res.status(200).json({artists});
     })
 });
@@ -63,10 +67,11 @@ artistRouter.post('/', (req, res, next) => {
                 next(err);
             } else {
                 // newArtist.id = lastID;
-                console.log('>>>>', lastID);
-                db.get(`SELECT * FROM Artist WHERE id=${lastID}`, (error, artist) => {
+                
+                db.all(`SELECT * FROM Artist;`, (error, artists) => { //  WHERE id=${this.lastID}
                     if (error) next(error);
-                    res.status(201).json({artist});
+                    // console.log('artists>>>>', artists[artists.length-1]);
+                    res.status(201).json({artist:artists[artists.length-1]});
                 })
             }
         });
@@ -78,3 +83,7 @@ artistRouter.post('/', (req, res, next) => {
 });
 
 module.exports = artistRouter;
+
+
+
+//The extension "React Developer Tools" is not allowed to access about:neterror?e=connectionFailure&u=http%3A//localhost%3A400/&c=UTF-8&f=regular&d=Firefox%20can%E2%80%99t%20establish%20a%20connection%20to%20the%20server%20at%20localhost%3A400.
