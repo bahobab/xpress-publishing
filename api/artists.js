@@ -47,11 +47,6 @@ artistRouter.post('/', (req, res, next) => {
     } else {
         if (newArtist.isCurrentlyEmployed === undefined) newArtist.isCurrentlyEmployed = 1;
         const {name, dateOfBirth, biography, isCurrentlyEmployed} = newArtist;
-        // try {
-
-        const query = `INSERT INTO Artist
-                           (name, date_of_birth, biography, is_currently_employed)
-                               VALUES ($name, $dob, $bio, $ice);`;
         const values = {
             $name: name,
             $dob: dateOfBirth,
@@ -59,31 +54,74 @@ artistRouter.post('/', (req, res, next) => {
             $ice: isCurrentlyEmployed
         };
 
-        // const query = `INSERT INTO Artist (name, date_of_birth, biography, is_currently_employed) VALUES ('${name}', '${dateOfBirth}', '${biography}', ${isCurrentlyEmployed});`;
-
+        const query = `INSERT INTO Artist
+                           (name, date_of_birth, biography, is_currently_employed)
+                               VALUES ($name, $dob, $bio, $ice);`;
+        
         db.run(query, values, err => {
         // db.run(query, err => {
             if (err) {
                 next(err);
             } else {
-                // newArtist.id = lastID;
-                
-                db.all(`SELECT * FROM Artist;`, (error, artists) => { //  WHERE id=${this.lastID}
-                    if (error) next(error);
-                    // console.log('artists>>>>', artists[artists.length-1]);
-                    res.status(201).json({artist:artists[artists.length-1]});
+                console.log('lastID >>>', this.lastID);
+                // db.all(`SELECT *
+                db.get(`SELECT *
+                            FROM Artist
+                                WHERE Artist.id=?;`, this.lastID, (error, artist) => { //  WHERE Artist.id=${this.lastID}
+                    // console.log('artist >>>', artists[1]);
+                    if (error) {
+                        next(error);
+                        return;
+                    }
+                    // const artist = artists[artists.length - 1];
+                    res.status(201).json({artist: artist}); // artist:artists[artists.length-1]
                 })
             }
         });
-        // }
-        // catch(e) {
-        //     console.log(e);
-        // }
     };
 });
 
+artistRouter.put('/:id', (req, res, next) => {
+    const artistUpdate = req.body.artist;
+    // console.log('UPDATE >>>', artistUpdate);
+    const artistId = Number(req.params.id);
+
+    if (!(artistUpdate.name && artistUpdate.dateOfBirth && artistUpdate.biography)) {
+        res.sendStatus(400);
+        // next();
+    } else {
+        const {name, dateOfBirth, biography, isCurrentlyEmployed} = artistUpdate;
+        const values = {
+            $id: artistId,
+            $name: name,
+            $dob: dateOfBirth,
+            $bio: biography,
+            $ice: isCurrentlyEmployed
+        };
+        const query = `UPDATE Artist
+                            SET 
+                                name=$name,
+                                date_of_birth=$dob,
+                                biography=$bio,
+                                is_currently_employed=$ice
+                                    WHERE Artist.id=$id;`;
+        db.run(query, values, (err) => {
+            if (err) {
+                console.log('UPDATE ERR >>>', err);
+                next(err);
+            } else {
+                db.get(`SELECT * FROM Artist WHERE id=${artistId};`, (err, updatedArtist) => {
+                    if (err) {
+                        console.log('UPDATED ERR>>>', err);
+                        next(err);
+                    } else {
+                        console.log('UPDATED SUCCESS>>>', updatedArtist);
+                        res.status(200).send({artist:updatedArtist});
+                    }
+                });
+            }
+        })
+    }
+});
+
 module.exports = artistRouter;
-
-
-
-//The extension "React Developer Tools" is not allowed to access about:neterror?e=connectionFailure&u=http%3A//localhost%3A400/&c=UTF-8&f=regular&d=Firefox%20can%E2%80%99t%20establish%20a%20connection%20to%20the%20server%20at%20localhost%3A400.
