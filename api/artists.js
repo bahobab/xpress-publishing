@@ -87,6 +87,7 @@ artistRouter.put('/:id', (req, res, next) => {
     const artistId = Number(req.params.id);
 
     if (!(artistUpdate.name && artistUpdate.dateOfBirth && artistUpdate.biography)) {
+        console.log('bad artist update>>>');
         res.sendStatus(400);
         // next();
     } else {
@@ -116,7 +117,7 @@ artistRouter.put('/:id', (req, res, next) => {
                         next(err);
                     } else {
                         console.log('UPDATED SUCCESS>>>', updatedArtist);
-                        res.status(200).send({artist:updatedArtist});
+                        //return res.status(200).send({artist:updatedArtist});
                     }
                 });
             }
