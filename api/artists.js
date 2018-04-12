@@ -27,12 +27,17 @@ artistRouter.param('id', (req,res, next, id) => {
                             WHERE id = ${Number(id)};`
 
     db.get(query, (err, artist) => {
-        if (err) next(err);
-        if (artist) {
+        if (err) {
+            next(err);
+        } else {
+            if (!artist) {
+                res.status(404).send(); // or res.sendStatus(404)
+                return;
+            }
+            
             req.artist = artist;
             next();
         }
-        res.status(404).send(); // or res.sendStatus(404)
     });
 });
 
@@ -59,21 +64,16 @@ artistRouter.post('/', (req, res, next) => {
                                VALUES ($name, $dob, $bio, $ice);`;
         
         db.run(query, values, function(err) {
-        // db.run(query, err => {
             if (err) {
                 next(err);
             } else {
-                // console.log('lastID >>>', this.lastID);
-                // db.all(`SELECT *
                 db.get(`SELECT *
                             FROM Artist
                                 WHERE Artist.id=?;`, this.lastID, (error, artist) => { //  WHERE Artist.id=${this.lastID}
-                    // console.log('artist >>>', artists[1]);
                     if (error) {
                         next(error);
                         return;
                     }
-                    // const artist = artists[artists.length - 1];
                     res.status(201).json({artist: artist}); // artist:artists[artists.length-1]
                 })
             }
@@ -83,13 +83,10 @@ artistRouter.post('/', (req, res, next) => {
 
 artistRouter.put('/:id', (req, res, next) => {
     const artistUpdate = req.body.artist;
-    // console.log('UPDATE >>>', artistUpdate);
     const artistId = Number(req.params.id);
 
     if (!(artistUpdate.name && artistUpdate.dateOfBirth && artistUpdate.biography)) {
-        console.log('bad artist update>>>');
         res.sendStatus(400);
-        // next();
     } else {
         const {name, dateOfBirth, biography, isCurrentlyEmployed} = artistUpdate;
         const values = {
@@ -116,8 +113,7 @@ artistRouter.put('/:id', (req, res, next) => {
                         console.log('UPDATED ERR>>>', err);
                         next(err);
                     } else {
-                        console.log('UPDATED SUCCESS>>>', updatedArtist);
-                        //return res.status(200).send({artist:updatedArtist});
+                        res.status(200).send({artist:updatedArtist});
                     }
                 });
             }
