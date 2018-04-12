@@ -58,12 +58,12 @@ artistRouter.post('/', (req, res, next) => {
                            (name, date_of_birth, biography, is_currently_employed)
                                VALUES ($name, $dob, $bio, $ice);`;
         
-        db.run(query, values, err => {
+        db.run(query, values, function(err) {
         // db.run(query, err => {
             if (err) {
                 next(err);
             } else {
-                console.log('lastID >>>', this.lastID);
+                // console.log('lastID >>>', this.lastID);
                 // db.all(`SELECT *
                 db.get(`SELECT *
                             FROM Artist
@@ -105,7 +105,7 @@ artistRouter.put('/:id', (req, res, next) => {
                                 biography=$bio,
                                 is_currently_employed=$ice
                                     WHERE Artist.id=$id;`;
-        db.run(query, values, (err) => {
+        db.run(query, values, function(err) {
             if (err) {
                 console.log('UPDATE ERR >>>', err);
                 next(err);
