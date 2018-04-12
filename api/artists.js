@@ -105,12 +105,10 @@ artistRouter.put('/:id', (req, res, next) => {
                                     WHERE Artist.id=$id;`;
         db.run(query, values, function(err) {
             if (err) {
-                console.log('UPDATE ERR >>>', err);
                 next(err);
             } else {
                 db.get(`SELECT * FROM Artist WHERE id=${artistId};`, (err, updatedArtist) => {
                     if (err) {
-                        console.log('UPDATED ERR>>>', err);
                         next(err);
                     } else {
                         res.status(200).send({artist:updatedArtist});
@@ -121,4 +119,32 @@ artistRouter.put('/:id', (req, res, next) => {
     }
 });
 
+artistRouter.delete('/:id', (req, res, next) => {
+    const artistId = Number(req.params.id);
+    // console.log('id>>>>', artistId);
+    const query = `UPDATE Artist
+                        SET
+                            is_currently_employed=$ice
+                                WHERE
+                                    Artist.id=$val;`;
+    db.run(query, {$ice: 0, $val: artistId}, function(error) {
+        if (error) {
+            next(error);
+            return;
+        } else {
+            db.get(`SELECT * FROM Artist WHERE id=${artistId};`, (err, deletedArtist) => {
+                if (err) {
+            // console.log('GET ERR >>>>', err);
+                    
+                    next(err);
+                    return;
+                } else {
+            // console.log('SUCCESS >>>>', deletedArtist);
+                    
+                    res.status(200).send({artist: deletedArtist});
+                }
+            });
+        }
+    });
+})
 module.exports = artistRouter;
