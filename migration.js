@@ -14,3 +14,10 @@ db.run(`CREATE TABLE IF NOT EXISTS Artist
                 PRIMARY KEY('id')
             );`
 );
+
+db.run(`CREATE TABLE IF NOT EXISTS Series
+(
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL
+);`);
